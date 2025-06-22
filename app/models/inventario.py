@@ -1,9 +1,16 @@
 from pydantic import BaseModel
-from datetime import date
+from typing import Optional
+from uuid import UUID
+from datetime import datetime, date
 
 class Inventario(BaseModel):
-    id: int
-    organizacion_id: int
-    producto_id: int
-    cantidad: int
-    ultimo_abastecimiento: date
+    id: Optional[UUID] = None
+    beneficiary_id: UUID
+    product_id: UUID
+    quantity: float
+    last_restocked: Optional[datetime] = None
+    minimum_required: Optional[float] = None
+    unit_of_measure: str
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    ultimo_abastecimiento: Optional[date] = None
