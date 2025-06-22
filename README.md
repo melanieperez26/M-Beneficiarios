@@ -26,34 +26,43 @@ tests/: Pruebas automáticas.
 
 ## Instalación y Ejecución
 Clona el repositorio:
-git clone https://github.com/tu_usuario/tu_repositorio.git
-cd tu_repositorio
+
+git clone https://github.com/melanieperez26/M-Beneficiarios.git
 
 Crea y activa un entorno virtual:
+
 python -m venv venv
-# Windows
+Windows
+
 .\venv\Scripts\activate
-# Linux/Mac
+Linux/Mac
+
 source venv/bin/activate
 
 Instala las dependencias:
+
 pip install -r requirements.txt
 
 
 Configura las variables de entorno para Supabase:
+
 SUPABASE_URL=https://tusupabase.supabase.co
 SUPABASE_KEY=tu_api_key_secreta
 
 Ejecuta la aplicación:r
+
 uvicorn main:app --reload
 
 Abre la documentación interactiva en tu navegador:
+
 http://127.0.0.1:8000/docs
 
-Uso: 
+## Uso: 
+
 Gestiona organizaciones beneficiarias y su inventario con endpoints CRUD.
 
 Visualiza y utiliza agrupamientos geográficos para optimizar la distribución.
 
 Ejecuta pruebas con:
+
 python -m pytest
