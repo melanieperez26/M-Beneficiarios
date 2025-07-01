@@ -31,4 +31,10 @@ export class DistribucionController {
   remove(@Param('id') id: string) {
     return this.distribucionService.remove(+id);
   }
+
+  //nuevo endpoint para IA
+  @Post ('optimize')
+  async optimize(){
+    return this.distribucionService.optimizeRoute();
+  }
 }

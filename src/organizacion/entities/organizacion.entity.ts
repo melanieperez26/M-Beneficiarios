@@ -8,10 +8,10 @@ export class Organizacion {
     @Column()
     nombre: string;
 
-    @Column({nullable: true})
+    @Column('double precision')
     lat: number;
 
-    @Column({nullable: true})
+    @Column('double precision')
     lng: number;
 
     @Column()
