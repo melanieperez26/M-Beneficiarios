@@ -34,7 +34,15 @@ export class DistribucionController {
 
   //nuevo endpoint para IA
   @Post ('optimize')
-  async optimize(){
-    return this.distribucionService.optimizeRoute();
+  optimize(
+    @Body ('maxClusters') maxClusters: number = 3,
+    @Body ('distribucionId') distribucionId: number
+  ) {
+    return this.distribucionService.optimizeRoute(maxClusters, distribucionId);
+  }
+
+  @Get ('rutas/:distribucionId')
+  getRutasOptimas(@Param('distribucionId') distribucionId: number) {
+    return this.distribucionService.getRutasOptimas(distribucionId);
   }
 }

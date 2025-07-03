@@ -18,7 +18,11 @@ export class RutaOptimaService {
   }
 
   findAll() {
-    return this.rutaOptimaRepository.find();
+    return this.rutaOptimaRepository.find({
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 
   findOne(id: number) {
