@@ -1,0 +1,68 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Organizacione {
+  id: ID!
+  nombre: String!
+  lat: Float
+  lng: Float
+  capacidad: Int!
+  usuarioId: Int!
+}
+
+type Distribucione {
+  id: ID!
+  organizacionId: Int!
+  donanteId: Int!
+  cantidad: Int!
+  productos: [String!]!
+}
+
+type Query {
+  organizaciones: [Organizacione!]!
+  organizacione(id: String!): Organizacione!
+  distribuciones: [Distribucione!]!
+  distribucione(id: String!): Distribucione!
+}
+
+type Mutation {
+  createOrganizacione(createOrganizacioneInput: CreateOrganizacioneInput!): Organizacione!
+  updateOrganizacione(updateOrganizacioneInput: UpdateOrganizacioneInput!): Organizacione!
+  removeOrganizacione(id: String!): Organizacione!
+  createDistribucione(createDistribucioneInput: CreateDistribucioneInput!): Distribucione!
+  updateDistribucione(updateDistribucioneInput: UpdateDistribucioneInput!): Distribucione!
+  removeDistribucione(id: String!): Distribucione!
+}
+
+input CreateOrganizacioneInput {
+  nombre: String!
+  lat: Float!
+  lng: Float!
+  capacidad: Int!
+  usuarioId: Int!
+}
+
+input UpdateOrganizacioneInput {
+  nombre: String
+  lat: Float
+  lng: Float
+  capacidad: Int
+  usuarioId: Int
+  id: ID!
+}
+
+input CreateDistribucioneInput {
+  organizacionId: Int!
+  donanteId: Int!
+  cantidad: Int!
+  productos: [String!]!
+}
+
+input UpdateDistribucioneInput {
+  organizacionId: Int
+  donanteId: Int
+  cantidad: Int
+  productos: [String!]
+  id: ID!
+}
