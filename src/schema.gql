@@ -15,8 +15,47 @@ type Distribucione {
   id: ID!
   organizacionId: Int!
   donanteId: Int!
+  fecha: DateTime!
   cantidad: Int!
   productos: [String!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type RutasOptima {
+  id: ID!
+  secuencia: [String!]!
+  distancia: Float!
+  distribucionId: String!
+}
+
+type OptimizeRouteResult {
+  mensaje: String!
+  resultado: [OptimizeRouteCluster!]!
+}
+
+type OptimizeRouteCluster {
+  cluster: Int!
+  secuencia: [String!]!
+  distancia: Float!
+}
+
+type Inventario {
+  id: ID!
+  organizacionId: Int!
+  producto: String!
+  cantidad: Int!
+  ultimoAbastecimiento: DateTime!
+}
+
+type Solicitude {
+  id: ID!
+  productos_necesitados: String!
+  urgencia: String!
+  organizacionId: Int!
 }
 
 type Query {
@@ -24,6 +63,13 @@ type Query {
   organizacione(id: String!): Organizacione!
   distribuciones: [Distribucione!]!
   distribucione(id: String!): Distribucione!
+  getRutasOptimas(distribucionId: String!): [RutasOptima!]!
+  inventarios: [Inventario!]!
+  inventario(id: String!): Inventario!
+  rutasOptimas: [RutasOptima!]!
+  rutasOptima(id: String!): RutasOptima!
+  solicitudes: [Solicitude!]!
+  solicitude(id: String!): Solicitude!
 }
 
 type Mutation {
@@ -33,6 +79,16 @@ type Mutation {
   createDistribucione(createDistribucioneInput: CreateDistribucioneInput!): Distribucione!
   updateDistribucione(updateDistribucioneInput: UpdateDistribucioneInput!): Distribucione!
   removeDistribucione(id: String!): Distribucione!
+  optimizeRoute(maxClusters: Int!, distribucionId: String!): OptimizeRouteResult!
+  createInventario(createInventarioInput: CreateInventarioInput!): Inventario!
+  updateInventario(updateInventarioInput: UpdateInventarioInput!): Inventario!
+  removeInventario(id: String!): Inventario!
+  createRutasOptima(createRutasOptimaInput: CreateRutasOptimaInput!): RutasOptima!
+  updateRutasOptima(updateRutasOptimaInput: UpdateRutasOptimaInput!): RutasOptima!
+  removeRutasOptima(id: String!): RutasOptima!
+  createSolicitude(createSolicitudeInput: CreateSolicitudeInput!): Solicitude!
+  updateSolicitude(updateSolicitudeInput: UpdateSolicitudeInput!): Solicitude!
+  removeSolicitude(id: String!): Solicitude!
 }
 
 input CreateOrganizacioneInput {
@@ -64,5 +120,46 @@ input UpdateDistribucioneInput {
   donanteId: Int
   cantidad: Int
   productos: [String!]
+  id: ID!
+}
+
+input CreateInventarioInput {
+  organizacionId: Int!
+  producto: String!
+  cantidad: Int!
+  ultimoAbastecimiento: DateTime!
+}
+
+input UpdateInventarioInput {
+  organizacionId: Int
+  producto: String
+  cantidad: Int
+  ultimoAbastecimiento: DateTime
+  id: ID!
+}
+
+input CreateRutasOptimaInput {
+  secuencia: String!
+  distancia: Float!
+  distribucionId: String!
+}
+
+input UpdateRutasOptimaInput {
+  secuencia: String
+  distancia: Float
+  distribucionId: String
+  id: ID!
+}
+
+input CreateSolicitudeInput {
+  productos_necesitados: String!
+  urgencia: String!
+  organizacionId: Int!
+}
+
+input UpdateSolicitudeInput {
+  productos_necesitados: String
+  urgencia: String
+  organizacionId: Int
   id: ID!
 }

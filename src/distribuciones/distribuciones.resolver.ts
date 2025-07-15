@@ -3,6 +3,8 @@ import { DistribucionesService } from './distribuciones.service';
 import { Distribucione } from './entities/distribucione.entity';
 import { CreateDistribucioneInput } from './dto/create-distribucione.input';
 import { UpdateDistribucioneInput } from './dto/update-distribucione.input';
+import { RutasOptima } from 'src/rutas-optimas/entities/rutas-optima.entity';
+import { OptimizeRouteResult } from './dto/optimize-route-result.dto';
 
 @Resolver(() => Distribucione)
 export class DistribucionesResolver {
@@ -31,5 +33,16 @@ export class DistribucionesResolver {
   @Mutation(() => Distribucione)
   removeDistribucione(@Args('id', { type: () => String }) id: string): Promise<Distribucione> {
     return this.distribucionesService.remove(id);
+  }
+
+  //nuevo endpoint para IA
+  @Mutation(() => OptimizeRouteResult)
+  optimizeRoute(@Args('maxClusters', { type: () => Int }) maxClusters: number = 3, @Args('distribucionId') distribucionId: string) {
+    return this.distribucionesService.optimizeRoute(maxClusters, distribucionId);
+  }
+
+  @Query(() => [RutasOptima], { name: 'getRutasOptimas' })
+  getRutasOptimas(@Args('distribucionId') distribucionId: string){
+    return this.distribucionesService.getRutasOptimas(distribucionId);
   }
 }

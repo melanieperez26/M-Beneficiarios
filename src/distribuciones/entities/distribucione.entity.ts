@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @ObjectType()
 @Entity({name: 'distribuciones'})
@@ -15,6 +15,10 @@ export class Distribucione {
   @Field(() => Int)
   @Column()
   donanteId: number;
+
+  @Field(() => Date)
+  @CreateDateColumn()
+  fecha: Date;
 
   @Field(() => Int)
   @Column()

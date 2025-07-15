@@ -12,6 +12,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
 import { DistribucionesModule } from './distribuciones/distribuciones.module';
+import { InventariosModule } from './inventarios/inventarios.module';
+import { RutasOptimasModule } from './rutas-optimas/rutas-optimas.module';
+import { SolicitudesModule } from './solicitudes/solicitudes.module';
 
 
 @Module({
@@ -39,7 +42,10 @@ import { DistribucionesModule } from './distribuciones/distribuciones.module';
     RutaOptimaModule,
     //Graphql 
     OrganizacionesModule,
-    DistribucionesModule
+    DistribucionesModule,
+    InventariosModule,
+    RutasOptimasModule,
+    SolicitudesModule
   ],
   controllers: [],
   providers: [],

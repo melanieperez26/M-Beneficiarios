@@ -1,5 +1,5 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsNumber, IsArray, IsString } from 'class-validator';
+import { IsNumber, IsArray, IsString, IsDate } from 'class-validator';
 
 @InputType()
 export class CreateDistribucioneInput {
