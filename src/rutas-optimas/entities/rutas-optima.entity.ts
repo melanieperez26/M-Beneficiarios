@@ -8,15 +8,15 @@ export class RutasOptima {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Field(() => [String])
+  @Field(() => String)
   @Column('json')
-  secuencia: string[];
+  secuencia: string;
 
   @Field(() => Float)
   @Column('float')
   distancia: number;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column({nullable: true})
   distribucionId: string;
 }

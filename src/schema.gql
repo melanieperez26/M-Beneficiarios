@@ -27,9 +27,9 @@ scalar DateTime
 
 type RutasOptima {
   id: ID!
-  secuencia: [String!]!
+  secuencia: String!
   distancia: Float!
-  distribucionId: String!
+  distribucionId: String
 }
 
 type OptimizeRouteResult {

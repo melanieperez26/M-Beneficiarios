@@ -113,7 +113,7 @@ export class DistribucionesService {
 
     //Guardar en la tabla RutasOptima
     const nuevaRuta = this.rutasOptimaRepository.create({
-      secuencia,
+      secuencia: JSON.stringify(secuencia),
       distancia: distanciaTotal,
       distribucionId,
     });

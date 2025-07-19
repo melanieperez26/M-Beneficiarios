@@ -1,10 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OrganizacionModule } from './organizacion/organizacion.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { InventarioModule } from './inventario/inventario.module';
-import { DistribucionModule } from './distribucion/distribucion.module';
-import { SolicitudModule } from './solicitud/solicitud.module';
-import { RutaOptimaModule } from './ruta-optima/ruta-optima.module';
 import { OrganizacionesModule } from './organizaciones/organizaciones.module';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -18,7 +13,7 @@ import { SolicitudesModule } from './solicitudes/solicitudes.module';
 
 
 @Module({
-  imports: [OrganizacionModule,
+  imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -36,10 +31,6 @@ import { SolicitudesModule } from './solicitudes/solicitudes.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
-    InventarioModule,
-    DistribucionModule,
-    SolicitudModule,
-    RutaOptimaModule,
     //Graphql 
     OrganizacionesModule,
     DistribucionesModule,

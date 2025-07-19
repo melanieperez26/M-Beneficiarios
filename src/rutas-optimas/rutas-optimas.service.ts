@@ -21,15 +21,26 @@ export class RutasOptimasService {
   }
 
   async findAll(): Promise<RutasOptima[]> {
-    return this.rutasOptimaRepository.find({
+    const rutas = await this.rutasOptimaRepository.find({
       order: {
         id: 'DESC',
       },
     });
+    return rutas.map(ruta => ({
+      ...ruta,
+      secuencia: JSON.stringify(ruta.secuencia)
+    }));
   }
 
   async findOne(id: string): Promise<RutasOptima | null> {
-    return this.rutasOptimaRepository.findOneBy({ id });
+    const ruta = await this.rutasOptimaRepository.findOne({
+      where: { id },
+    });
+    if (!ruta) return null;
+    return {
+      ...ruta,
+      secuencia: JSON.stringify(ruta.secuencia)
+    };
   }
 
   async update(id: string, updateRutasOptimaInput: UpdateRutasOptimaInput): Promise<RutasOptima | null> {
