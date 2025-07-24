@@ -1,0 +1,75 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type OrganizacionesType {
+  id: ID!
+  nombre: String!
+  lat: Float
+  lng: Float
+  capacidad: Int!
+  usuarioId: ID!
+}
+
+type DistribucionesType {
+  id: ID!
+  organizacionId: String!
+  donanteId: String!
+  cantidad: Float
+  productos: [String!]!
+}
+
+type InventariosType {
+  id: ID!
+  organizacionId: String!
+  producto: String!
+  cantidad: Float
+  ultimoAbastecimiento: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type SolicitudesType {
+  id: ID!
+  productos_necesitados: String!
+  urgencia: String!
+  organizacionId: ID!
+}
+
+type RutasOptimasType {
+  id: ID!
+  secuencia: String!
+  distancia: Float!
+  distribucionId: String!
+}
+
+type UsuarioType {
+  UsuariosId: ID!
+  nombre: String!
+  apellido: String!
+  correo: String!
+  telefono: String!
+  tipo: String!
+}
+
+type VoluntarioType {
+  voluntarios_id: ID!
+  nombre: String!
+  apellido: String!
+  correo: String!
+  telefono: String!
+  estado: String!
+}
+
+type Query {
+  organizaciones: [OrganizacionesType!]!
+  distribuciones: [DistribucionesType!]!
+  inventarios: [InventariosType!]!
+  solicitudes: [SolicitudesType!]!
+  rutasOptimas: [RutasOptimasType!]!
+  usuarios: [UsuarioType!]!
+  voluntarios: [VoluntarioType!]!
+}
