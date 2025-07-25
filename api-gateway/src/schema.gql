@@ -51,17 +51,25 @@ type UsuarioType {
   nombre: String!
   apellido: String!
   correo: String!
-  telefono: String!
+  telefono: Float!
   tipo: String!
 }
 
 type VoluntarioType {
-  voluntarios_id: ID!
-  nombre: String!
-  apellido: String!
-  correo: String!
-  telefono: String!
-  estado: String!
+  voluntariosId: ID!
+  habilidades: String
+  disponibilidad: String
+  usuario: UsuarioType
+}
+
+type EventoType {
+  eventosId: ID!
+  nombre: String
+  fecha: String
+  hora: String
+  ubicacion: String
+  tipo: String
+  estado: String
 }
 
 type Query {
@@ -72,4 +80,66 @@ type Query {
   rutasOptimas: [RutasOptimasType!]!
   usuarios: [UsuarioType!]!
   voluntarios: [VoluntarioType!]!
+  eventos: [EventoType!]!
+}
+
+type Mutation {
+  createOrganizacione(input: CreateOrganizacioneInput!): OrganizacionesType!
+  createEvento(input: CreateEventoInput!): EventoType!
+  createUsuario(input: CreateUsuarioInput!): UsuarioType!
+  updateUsuario(input: UpdateUsuarioInput!): UsuarioType!
+  deleteUsuario(input: DeleteUsuarioInput!): Boolean!
+  createVoluntario(input: CreateVoluntarioInput!): VoluntarioType!
+  updateVoluntario(input: UpdateVoluntarioInput!): VoluntarioType!
+  deleteVoluntario(input: DeleteVoluntarioInput!): Boolean!
+}
+
+input CreateOrganizacioneInput {
+  nombre: String!
+  lat: Float!
+  lng: Float!
+  capacidad: Float!
+  usuarioId: Int!
+}
+
+input CreateEventoInput {
+  eventosId: Int!
+  nombre: String!
+  fecha: String!
+  hora: String!
+}
+
+input CreateUsuarioInput {
+  UsuariosId: Int!
+  nombre: String!
+  apellido: String!
+  correo: String!
+  telefono: Float!
+  tipo: String!
+}
+
+input UpdateUsuarioInput {
+  voluntariosId: Int!
+}
+
+input DeleteUsuarioInput {
+  voluntariosId: Int!
+}
+
+input CreateVoluntarioInput {
+  voluntariosId: Int!
+  habilidades: String!
+  disponibilidad: String!
+  usuarioId: Int!
+}
+
+input UpdateVoluntarioInput {
+  voluntariosId: Int!
+  nombre: String!
+  habilidades: String!
+  disponibilidad: String!
+}
+
+input DeleteVoluntarioInput {
+  voluntariosId: Int!
 }

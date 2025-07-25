@@ -15,7 +15,7 @@ export class UsuarioType {
   correo: string;
 
   @Field()
-  telefono: string;
+  telefono: number;
 
   @Field()
   tipo: string;
@@ -24,20 +24,38 @@ export class UsuarioType {
 @ObjectType()
 export class VoluntarioType {
   @Field(() => ID)
-  voluntarios_id: number;
+  voluntariosId: number;
 
-  @Field()
-  nombre: string;
+  @Field({nullable: true})
+  habilidades?: string;
 
-  @Field()
-  apellido: string;
+  @Field({nullable: true})
+  disponibilidad?: string;
 
-  @Field()
-  correo: string;
+  @Field(() => UsuarioType, {nullable: true})
+  usuario?: UsuarioType;
 
-  @Field()
-  telefono: string;
+}
+@ObjectType()
+export class EventoType {
+  @Field(() => ID)
+  eventosId: number;
 
-  @Field()
-  estado: string;
+  @Field({ nullable: true })
+  nombre?: string;
+
+  @Field({ nullable: true })
+  fecha?: string;
+
+  @Field({ nullable: true })
+  hora?: string;
+
+  @Field({ nullable: true })
+  ubicacion?: string;
+
+  @Field({ nullable: true })
+  tipo?: string;
+
+  @Field({ nullable: true })
+  estado?: string;
 }
