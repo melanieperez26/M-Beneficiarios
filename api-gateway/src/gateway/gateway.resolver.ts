@@ -5,7 +5,7 @@ import { DistribucionesType } from './types/distribuciones.type';
 import { InventariosType } from './types/inventarios.type';
 import { SolicitudesType } from './types/solicitudes.type';
 import { RutasOptimasType } from './types/rutasoptimas.type';
-import { CreateOrganizacioneInput, CreateInventarioInput } from './types/InputTypesBeneficiarios';
+import { CreateOrganizacioneInput, CreateInventarioInput, CreateSolicitudeInput } from './types/InputTypesBeneficiarios';
 
 
 @Resolver()
@@ -294,6 +294,68 @@ export class GatewayResolver {
             }
             throw new Error('Failed to create inventario: ' + error.message);
         } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+
+    @Mutation(() => SolicitudesType)
+    async createSolicitude(
+        @Args('createSolicitudeInput') input: CreateSolicitudeInput
+    ): Promise<SolicitudesType> {
+        // Ensure organizacionId is a number
+        const numericInput = {
+            ...input,
+            organizacionId: typeof input.organizacionId === 'string' 
+                ? parseInt(input.organizacionId, 10) 
+                : input.organizacionId
+        };
+        const mutation = `
+            mutation CreateSolicitude($input: CreateSolicitudeInput!) {
+                createSolicitude(createSolicitudeInput: $input) {
+                    id
+                    productos_necesitados
+                    urgencia
+                    organizacionId
+                }
+            }
+        `;
+
+        try {
+            console.log('\n===== REQUEST TO MICROSERVICE =====');
+            console.log('URL:', 'http://localhost:3000/graphql');
+            console.log('Request Data:', {
+                query: mutation,
+                variables: { input }
+            });
+
+            const response = await axios.post('http://localhost:3000/graphql', {
+                query: mutation,
+                variables: { input: numericInput }
+            });
+
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status);
+            console.log('Response Data:', response.data);
+
+            if (!response.data.data || !response.data.data.createSolicitude) {
+                throw new Error('Unexpected response format from microservice');
+            }
+
+            return response.data.data.createSolicitude;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (error.response) {
+                console.error('Status:', error.response.status);
+                console.error('Response Data:', error.response.data);
+                console.error('Headers:', error.response.headers);
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error:', error.message);
+            }
+            console.error('\n===== REQUEST COMPLETED =====\n');
+            throw new Error(`Failed to create solicitud: ${error.message}`);
+        }finally {
             console.log('\n===== REQUEST COMPLETED =====\n');
         }
     }

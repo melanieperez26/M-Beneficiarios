@@ -1,18 +1,15 @@
 import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 @InputType()
-export class CreateSolicitudInput {
-  @Field(() => Int)
-  solicitudesId: number;
-
+export class CreateSolicitudeInput {
   @Field()
   productos_necesitados: string;
 
   @Field()
   urgencia: string;
 
-  @Field(() => ID)
-  organizacionId: string;
+  @Field(() => Int)
+  organizacionId: number;
 }
 
 @InputType()
