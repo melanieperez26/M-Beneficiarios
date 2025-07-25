@@ -5,7 +5,7 @@ import { DistribucionesType } from './types/distribuciones.type';
 import { InventariosType } from './types/inventarios.type';
 import { SolicitudesType } from './types/solicitudes.type';
 import { RutasOptimasType } from './types/rutasoptimas.type';
-import { CreateOrganizacioneInput } from './types/InputTypesBeneficiarios';
+import { CreateOrganizacioneInput, CreateInventarioInput } from './types/InputTypesBeneficiarios';
 
 
 @Resolver()
@@ -196,6 +196,103 @@ export class GatewayResolver {
                 console.error('Error Stack:', error.stack);
             }
             throw new Error('Failed to create organizacion: ' + error.message);
+        } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+
+    @Mutation(() => InventariosType)
+    async createInventario(
+        @Args('createInventarioInput') input: CreateInventarioInput
+    ): Promise<InventariosType> {
+        // Asegurarnos de que la fecha esté en formato ISO string
+        const inputData = {
+            organizacionId: input.organizacionId,
+            producto: input.producto,
+            cantidad: input.cantidad,
+            ultimoAbastecimiento: input.ultimoAbastecimiento.toISOString()
+        };
+
+        const mutation = `
+            mutation CreateInventario($input: CreateInventarioInput!) {
+                createInventario(createInventarioInput: $input) {
+                    id
+                    organizacionId
+                    producto
+                    cantidad
+                    ultimoAbastecimiento
+                }
+            }
+        `;
+
+        const requestData = {
+            query: mutation,
+            variables: { input }
+        };
+
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+
+        try {
+            const response = await axios({
+                method: 'post',
+                url: this.microserviceUrl,
+                data: requestData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                validateStatus: () => true
+            });
+
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+            
+            if (response.status !== 200) {
+                console.error('HTTP Error Details:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: response.data,
+                    headers: response.headers
+                });
+                throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+            }
+
+            if (response.data.errors) {
+                console.error('GraphQL Errors:', response.data.errors);
+                throw new Error('Error from microservice: ' + 
+                    JSON.stringify(response.data.errors, null, 2));
+            }
+
+            if (!response.data?.data?.createInventario) {
+                console.error('Unexpected response format:', response.data);
+                throw new Error('Unexpected response format from microservice');
+            }
+
+            // Convertir la respuesta para manejar correctamente la fecha
+            const result = response.data.data.createInventario;
+            return {
+                ...result,
+                ultimoAbastecimiento: new Date(result.ultimoAbastecimiento)
+            };
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (error.response) {
+                console.error('Error Response Data:', error.response.data);
+                console.error('Status:', error.response.status);
+                console.error('Headers:', error.response.headers);
+            } else if (error.request) {
+                console.error('No response received. Request details:', {
+                    url: this.microserviceUrl,
+                    method: 'POST',
+                    data: JSON.stringify(requestData, null, 2)
+                });
+            } else {
+                console.error('Error Message:', error.message);
+            }
+            throw new Error('Failed to create inventario: ' + error.message);
         } finally {
             console.log('\n===== REQUEST COMPLETED =====\n');
         }

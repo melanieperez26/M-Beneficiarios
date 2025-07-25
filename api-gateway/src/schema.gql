@@ -85,6 +85,7 @@ type Query {
 
 type Mutation {
   createOrganizacione(input: CreateOrganizacioneInput!): OrganizacionesType!
+  createInventario(createInventarioInput: CreateInventarioInput!): InventariosType!
   createEvento(input: CreateEventoInput!): EventoType!
   createUsuario(input: CreateUsuarioInput!): UsuarioType!
   updateUsuario(input: UpdateUsuarioInput!): UsuarioType!
@@ -100,6 +101,13 @@ input CreateOrganizacioneInput {
   lng: Float!
   capacidad: Float!
   usuarioId: Int!
+}
+
+input CreateInventarioInput {
+  organizacionId: Int!
+  producto: String!
+  cantidad: Int!
+  ultimoAbastecimiento: DateTime!
 }
 
 input CreateEventoInput {

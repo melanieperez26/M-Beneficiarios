@@ -37,18 +37,15 @@ export class CreateOrganizacioneInput {
 
 @InputType()
 export class CreateInventarioInput {
-  @Field(() => ID)
-  id: string;
-
-  @Field()
-  organizacionId: string;
+  @Field(() => Int)
+  organizacionId: number;
 
   @Field()
   producto: string;
 
-  @Field()
+  @Field(() => Int)
   cantidad: number;
 
-  @Field()
+  @Field(() => Date)
   ultimoAbastecimiento: Date;
 }
