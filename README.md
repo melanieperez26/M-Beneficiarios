@@ -140,7 +140,7 @@ API Gateway para el sistema de gestión de voluntariado, construido con NestJS y
 
 ```bash
 # Clonar el repositorio
-git clone <repo-url>
+git clone https://github.com/melanieperez26/M-Beneficiarios.git
 cd api-gateway
 
 # Instalar dependencias

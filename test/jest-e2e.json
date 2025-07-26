@@ -1,9 +1,28 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../src/$1",
+    "^src/(.*)$": "<rootDir>/../src/$1"
+  },
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "setupFiles": ["dotenv/config"],
+  "setupFilesAfterEnv": ["<rootDir>/setup.ts"],
+  "testEnvironmentOptions": {
+    "url": "http://localhost"
+  },
+  "moduleDirectories": ["node_modules", "<rootDir>"],
+  "modulePaths": ["<rootDir>/.."],
+  "globals": {
+    "ts-jest": {
+      "useESM": true
+    }
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@nestjs|graphql-request)/)"
+  ]
 }
