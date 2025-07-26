@@ -116,6 +116,145 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+
+# API Gateway
+
+API Gateway para el sistema de gestión de voluntariado, construido con NestJS y GraphQL.
+
+## Características
+
+- Gestión de usuarios y perfiles
+- Administración de organizaciones
+- Control de inventario
+- Manejo de voluntarios y sus habilidades
+- Seguridad con JWT
+
+## Requisitos Previos
+
+- Node.js (v16 o superior)
+- npm o yarn
+- Servidor de base de datos PostgreSQL
+- Servicios microservicios configurados
+
+## Instalación
+
+```bash
+# Clonar el repositorio
+git clone <repo-url>
+cd api-gateway
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar el archivo .env con tus configuraciones
+
+# Iniciar el servidor en modo desarrollo
+npm run start:dev
+```
+
+## Uso
+
+### Consultas Básicas
+
+#### Obtener todos los usuarios
+```graphql
+query {
+  usuarios {
+    usuariosId
+    nombre
+    apellido
+    correo
+    telefono
+    tipo
+  }
+}
+```
+
+#### Obtener un usuario por ID
+```graphql
+query {
+  usuario(id: 1) {
+    usuariosId
+    nombre
+    apellido
+    correo
+  }
+}
+```
+
+#### Obtener todas las organizaciones
+```graphql
+query {
+  organizaciones {
+    id
+    nombre
+    direccion
+    telefono
+    correo
+  }
+}
+```
+
+### Mutaciones Comunes
+
+#### Crear un nuevo usuario
+```graphql
+mutation {
+  createUsuario(input: {
+    nombre: "Nuevo",
+    apellido: "Usuario",
+    correo: "nuevo@ejemplo.com",
+    telefono: 1234567890,
+    tipo: "voluntario"
+  }) {
+    usuariosId
+    nombre
+    correo
+  }
+}
+```
+
+#### Actualizar una organización
+```graphql
+mutation {
+  updateOrganizacion(id: 1, input: {
+    nombre: "Nuevo Nombre",
+    direccion: "Nueva Dirección",
+    telefono: "987654321"
+  }) {
+    id
+    nombre
+    direccion
+  }
+}
+```
+
+## Estructura del Proyecto
+
+```
+src/
+├── gateway/
+│   ├── dto/                # Objetos de transferencia de datos
+│   ├── types/              # Tipos GraphQL
+│   ├── gateway.module.ts   # Módulo principal
+│   └── gateway.resolver.ts # Resolvers GraphQL
+├── main.ts                # Punto de entrada de la aplicación
+└── app.module.ts          # Módulo raíz
+```
+
+## Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+JWT_SECRET=tu_clave_secreta
+GRAPHQL_ENDPOINT=http://localhost:3000/graphql
+```
+
+
 ## Resources - Documentación
 
 Check out a few resources that may come in handy when working with NestJS:
