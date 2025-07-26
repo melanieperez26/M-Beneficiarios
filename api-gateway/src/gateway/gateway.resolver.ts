@@ -53,21 +53,34 @@ export class GatewayResolver {
 
     @Query(() => [InventariosType])
     async inventarios(): Promise<InventariosType[]> {
-        const response = await axios.post(this.microserviceUrl, {
-            query: `
-                query {
-                    inventarios {
-                        id
-                        organizacionId
-                        producto
-                        cantidad
-                        ultimoAbastecimiento
+        try {
+            const response = await axios.post(this.microserviceUrl, {
+                query: `
+                    query {
+                        inventarios {
+                            id
+                            organizacionId
+                            producto
+                            cantidad
+                            ultimoAbastecimiento
+                        }
                     }
-                }
-            `
-        });
+                `
+            });
 
-        return response.data.data.inventarios;
+            // Ensure dates are properly formatted
+            const inventarios = response.data?.data?.inventarios?.map(item => ({
+                ...item,
+                ultimoAbastecimiento: item.ultimoAbastecimiento 
+                    ? new Date(item.ultimoAbastecimiento).toISOString() 
+                    : null
+            })) || [];
+
+            return inventarios;
+        } catch (error) {
+            console.error('Error fetching inventarios:', error);
+            return [];
+        }
     }
 
     @Query(() => [SolicitudesType])

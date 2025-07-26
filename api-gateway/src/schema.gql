@@ -24,7 +24,7 @@ type InventariosType {
   organizacionId: String!
   producto: String!
   cantidad: Float
-  ultimoAbastecimiento: DateTime!
+  ultimoAbastecimiento: DateTime
 }
 
 """
@@ -47,11 +47,11 @@ type RutasOptimasType {
 }
 
 type UsuarioType {
-  UsuariosId: ID!
+  usuariosId: ID!
   nombre: String!
   apellido: String!
   correo: String!
-  telefono: Float!
+  telefono: Float
   tipo: String!
 }
 
@@ -91,7 +91,7 @@ type Mutation {
   createUsuario(input: CreateUsuarioInput!): UsuarioType!
   updateUsuario(input: UpdateUsuarioInput!): UsuarioType!
   deleteUsuario(input: DeleteUsuarioInput!): Boolean!
-  createVoluntario(input: CreateVoluntarioInput!): VoluntarioType!
+  createVoluntario(voluntario: CreateVoluntarioInput!): VoluntarioType!
   updateVoluntario(input: UpdateVoluntarioInput!): VoluntarioType!
   deleteVoluntario(input: DeleteVoluntarioInput!): Boolean!
 }
@@ -142,7 +142,7 @@ input DeleteUsuarioInput {
 }
 
 input CreateVoluntarioInput {
-  voluntariosId: Int!
+  voluntariosId: Int
   habilidades: String!
   disponibilidad: String!
   usuarioId: Int!

@@ -28,33 +28,11 @@ export class VoluntariadoResolver {
   
     @Query(() => [UsuarioType])
     async usuarios() {
-    const query = `
+    try {
+      const query = `
         query {
-        getUsuarios {
-            UsuariosId
-            nombre
-            apellido
-            correo
-            telefono
-            tipo
-        }
-        }
-    `;
-    const data = await this.graphqlRequest(query);
-    return data.getUsuarios || [];
-    }
-
-
-  @Query(() => [VoluntarioType])
-  async voluntarios() {
-    const query = `
-      query {
-        getVoluntarios {
-          voluntariosId
-          habilidades
-          disponibilidad
-          usuario {
-            UsuariosId
+          getUsuarios {
+            usuariosId
             nombre
             apellido
             correo
@@ -62,10 +40,70 @@ export class VoluntariadoResolver {
             tipo
           }
         }
+      `;
+      console.log('Ejecutando consulta de usuarios...');
+      const response = await this.graphqlRequest(query);
+      console.log('Respuesta del servidor (usuarios):', JSON.stringify(response, null, 2));
+      
+      if (!response) {
+        console.error('No se recibió respuesta del servidor');
+        return [];
       }
-    `;
-    const data = await this.graphqlRequest(query);
-    return data.voluntarios || [];
+      
+      if (!response.getUsuarios) {
+        console.error('La respuesta no contiene el campo "getUsuarios":', Object.keys(response));
+        return [];
+      }
+      
+      console.log(`Se encontraron ${response.getUsuarios.length} usuarios`);
+      return response.getUsuarios || [];
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+      return [];
+    }
+  }
+
+
+  @Query(() => [VoluntarioType])
+  async voluntarios() {
+    try {
+      const query = `
+        query {
+          getVoluntarios {
+            voluntariosId
+            habilidades
+            disponibilidad
+            usuario {
+              usuariosId
+              nombre
+              apellido
+              correo
+              telefono
+              tipo
+            }
+          }
+        }
+      `;
+      console.log('Ejecutando consulta de voluntarios...');
+      const response = await this.graphqlRequest(query);
+      console.log('Respuesta del servidor:', JSON.stringify(response, null, 2));
+      
+      if (!response) {
+        console.error('No se recibió respuesta del servidor');
+        return [];
+      }
+      
+      if (!response.getVoluntarios) {
+        console.error('La respuesta no contiene el campo "getVoluntarios":', Object.keys(response));
+        return [];
+      }
+      
+      console.log(`Se encontraron ${response.getVoluntarios.length} voluntarios`);
+      return response.getVoluntarios || [];
+    } catch (error) {
+      console.error('Error al obtener voluntarios:', error);
+      return [];
+    }
   }
 
   @Query(() => [EventoType])
@@ -170,25 +208,59 @@ export class VoluntariadoResolver {
   // MUTACIONES VOLUNTARIOS
 
   @Mutation(() => VoluntarioType)
-  async createVoluntario(@Args('input') input: CreateVoluntarioInput) {
-    const mutation = `
-      mutation CreateVoluntario($voluntario: VoluntariosInput!) {
-        createVoluntario(voluntario: $voluntario) {
-          voluntariosId
-          habilidades
-          disponibilidad
-          usuario {
-            UsuariosId
-            nombre
+  async createVoluntario(@Args('voluntario') voluntario: CreateVoluntarioInput) {
+    try {
+      // If voluntariosId is not provided, find the next available ID
+      let voluntariosId = voluntario.voluntariosId;
+      
+      if (!voluntariosId) {
+        const getVoluntariosQuery = `
+          query {
+            getVoluntarios {
+              voluntariosId
+            }
+          }
+        `;
+        
+        const existingVoluntarios = await this.graphqlRequest(getVoluntariosQuery);
+        const usedIds = existingVoluntarios?.getVoluntarios?.map((v: any) => v.voluntariosId) || [];
+        voluntariosId = usedIds.length > 0 ? Math.max(...usedIds) + 1 : 1;
+      }
+      
+      // Create new volunteer with the provided or generated ID
+      const newVoluntario = {
+        ...voluntario,
+        voluntariosId
+      };
+
+      const mutation = `
+        mutation CreateVoluntario($voluntario: VoluntariosInput!) {
+          createVoluntario(voluntario: $voluntario) {
+            voluntariosId
+            habilidades
+            disponibilidad
+            usuario {
+              usuariosId
+              nombre
+            }
           }
         }
+      `;
+      
+      const variables = { voluntario: newVoluntario };
+      const data = await this.graphqlRequest(mutation, variables);
+      
+      if (!data || !data.createVoluntario) {
+        throw new Error('Failed to create volunteer: No data returned from server');
       }
-    `;
-    const variables = { voluntario: input };
-    const data = await this.graphqlRequest(mutation, variables);
-    return data.createVoluntario;
-  }
-
+      
+      return data.createVoluntario;
+    } catch (error) {
+      console.error('Error creating volunteer:', error);
+      throw error;
+    }
+  }   
+  
   @Mutation(() => VoluntarioType)
   async updateVoluntario(@Args('input') input: UpdateVoluntarioInput) {
     const mutation = `
@@ -198,7 +270,7 @@ export class VoluntariadoResolver {
           habilidades
           disponibilidad
           usuario {
-            UsuariosId
+            usuariosId
             nombre
           }
         }
@@ -221,9 +293,3 @@ export class VoluntariadoResolver {
     return data.deleteVoluntario;
   }
 }
-  
-
-
-
-
-

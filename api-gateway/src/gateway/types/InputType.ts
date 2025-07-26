@@ -41,8 +41,8 @@ export class DeleteEventoInput {
 
 @InputType()
 export class CreateVoluntarioInput {
-  @Field(() => Int)
-  voluntariosId: number;
+  @Field(() => Int, { nullable: true })
+  voluntariosId?: number;
   
   @Field()
   habilidades: string;
@@ -52,7 +52,6 @@ export class CreateVoluntarioInput {
 
   @Field(() => Int)
   usuarioId: number;
-
 }
 
 @InputType()
