@@ -10,6 +10,7 @@ import { DistribucionesModule } from './distribuciones/distribuciones.module';
 import { InventariosModule } from './inventarios/inventarios.module';
 import { RutasOptimasModule } from './rutas-optimas/rutas-optimas.module';
 import { SolicitudesModule } from './solicitudes/solicitudes.module';
+import { WebSocketClientService } from './websocket-client.service';
 
 
 @Module({
@@ -39,6 +40,7 @@ import { SolicitudesModule } from './solicitudes/solicitudes.module';
     SolicitudesModule
   ],
   controllers: [],
-  providers: [],
+  providers: [WebSocketClientService],
+  exports: [WebSocketClientService]
 })
 export class AppModule {}

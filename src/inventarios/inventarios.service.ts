@@ -4,17 +4,23 @@ import { UpdateInventarioInput } from './dto/update-inventario.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Inventario } from './entities/inventario.entity';
 import { Repository } from 'typeorm';
+import { WebSocketClientService } from 'src/websocket-client.service';
 
 @Injectable()
 export class InventariosService {
   constructor(
     @InjectRepository(Inventario)
     private inventarioRepository: Repository<Inventario>,
+    private readonly wsClient: WebSocketClientService,
   ) {}
 
   async create(createInventarioInput: CreateInventarioInput): Promise<Inventario> {
     const inevnatrio = this.inventarioRepository.create(createInventarioInput);
-    return this.inventarioRepository.save(inevnatrio);
+    const saved = await this.inventarioRepository.save(inevnatrio);
+
+    this.wsClient.emitirEvento('nuevo-inventario', saved);
+
+    return saved;
   }
 
   async findAll(): Promise<Inventario[]> {
@@ -30,7 +36,11 @@ export class InventariosService {
     if (!inventario) {
       throw new Error('Inventario no encontrado');
     }
-    return this.inventarioRepository.save(inventario);
+    const updated = await this.inventarioRepository.save(inventario);
+
+    this.wsClient.emitirEvento('inventario-actualizado', updated); // ✅ nuevo evento
+
+    return updated;
   }
 
   async remove(id: string): Promise<Inventario> {
@@ -39,6 +49,9 @@ export class InventariosService {
       throw new Error('Inventario no encontrado');
     }
     await this.inventarioRepository.remove(inventario);
-    return {...inventario, id};
+
+    this.wsClient.emitirEvento('inventario-eliminado', { id }); // ✅ nuevo evento
+
+    return { ...inventario, id };
   }
 }

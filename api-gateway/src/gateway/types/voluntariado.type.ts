@@ -54,8 +54,8 @@ export class EventoType {
   ubicacion?: string;
 
   @Field({ nullable: true })
-  tipo?: string;
+  voluntariosNecesarios?: string;
 
   @Field({ nullable: true })
-  estado?: string;
+  descripcionEventos?: string;
 }

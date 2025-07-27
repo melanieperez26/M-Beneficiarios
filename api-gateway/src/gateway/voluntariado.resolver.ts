@@ -6,12 +6,13 @@ import { EventoType } from './types/voluntariado.type';
 import { CreateEventoInput } from './types/InputType';
 import { CreateUsuarioInput } from './types/InputType';
 import { CreateVoluntarioInput } from './types/InputType';
-import { UpdateEventoInput } from './types/InputType';
-import { UpdateUsuarioInput } from './types/InputType';
-import { UpdateVoluntarioInput } from './types/InputType';
-import { DeleteEventoInput } from './types/InputType';
-import { DeleteUsuarioInput } from './types/InputType';
-import { DeleteVoluntarioInput } from './types/InputType';
+import { UsuariosInput } from './types/InputType';
+import { VoluntariosInput } from './types/InputType';
+import { UsuariosDelete } from './types/InputType';
+import { VoluntariosDelete } from './types/InputType';
+import { EventosInput } from './types/InputType';
+import { EventosDelete } from './types/InputType';
+
 
 @Resolver()
 export class VoluntariadoResolver {
@@ -115,42 +116,75 @@ export class VoluntariadoResolver {
           nombre
           fecha
           hora
-          lugar
-          tipo
-          estado
+          ubicacion
+          voluntariosNecesarios
+          descripcionEventos
         }
       }
     `;
-    const data = await this.graphqlRequest(query);
-    return data.getEventos || [];
-}
+    try {
+      const data = await this.graphqlRequest(query);
+      console.log('Response from GraphQL server:', JSON.stringify(data, null, 2)); // Add this line for debugging
+      return data?.getEventos || [];
+    } catch (error) {
+      console.error('Error al obtener eventos:', error);
+      return [];
+    }
+  }
 
 
   //Para mutaciones 
   @Mutation(() => EventoType)
-  async createEvento(@Args('input') input: CreateEventoInput) {
+  async createEvento(@Args('evento') evento: CreateEventoInput) {
     const mutation = `
-      mutation CreateEvento(
-        $eventosId: Int!,
-        $nombre: String!,
-        $fecha: String!,
-        $hora: String!,
-      ) {
-        createEvento(evento: {
-          eventosId: $eventosId,
-          nombre: $nombre,
-          fecha: $fecha,
-          hora: $hora,
-        }) {
+      mutation CreateEvento($evento: EventosInput!) {
+        createEvento(evento: $evento) {
           eventosId
           nombre
           fecha
+          hora
+          ubicacion
+          voluntariosNecesarios
+          descripcionEventos
         }
       }
     `;
-    const variables = { ...input };
+    const variables = { evento };
     const data = await this.graphqlRequest(mutation, variables);
     return data.createEvento;
+
+  }
+
+  @Mutation(() => EventoType)
+  async updateEvento(@Args('evento') evento: EventosInput) {
+    const mutation = `
+      mutation UpdateEvento($evento: EventosInput!) {
+        updateEvento(evento: $evento) {
+          eventosId
+          nombre
+          fecha
+          hora
+          ubicacion
+          voluntariosNecesarios
+          descripcionEventos
+        }
+      }
+    `;
+    const variables = { evento };
+    const data = await this.graphqlRequest(mutation, variables);
+    return data.updateEvento;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteEvento(@Args('evento') evento: EventosDelete) {
+    const mutation = `
+      mutation DeleteEvento($evento: EventosDelete!) {
+        deleteEvento(evento: $evento)
+      }
+    `;
+    const variables = { evento };
+    const data = await this.graphqlRequest(mutation, variables);
+    return data.deleteEvento;
   }
 
 
@@ -160,7 +194,7 @@ export class VoluntariadoResolver {
     const mutation = `
       mutation CreateUsuario($usuario: UsuariosInput!) {
         createUsuario(usuario: $usuario) {
-          UsuariosId
+          usuariosId
           nombre
           apellido
           correo
@@ -175,9 +209,9 @@ export class VoluntariadoResolver {
   }
 
   @Mutation(() => UsuarioType)
-  async updateUsuario(@Args('input') input: UpdateUsuarioInput) {
+  async updateUsuario(@Args('usuario') usuario: UsuariosInput) {  
     const mutation = `
-      mutation UpdateUsuario($usuario: UsuariosInput!) {
+      mutation UpdateUsuario($usuario: UsuariosInput!) {  
         updateUsuario(usuario: $usuario) {
           usuariosId
           nombre
@@ -188,19 +222,23 @@ export class VoluntariadoResolver {
         }
       }
     `;
-    const variables = { usuario: input };
+    const variables = { usuario };  
     const data = await this.graphqlRequest(mutation, variables);
     return data.updateUsuario;
   }
 
   @Mutation(() => Boolean)
-  async deleteUsuario(@Args('input') input: DeleteUsuarioInput) {
+  async deleteUsuario(@Args('usuario') usuario: UsuariosDelete) {
     const mutation = `
       mutation DeleteUsuario($usuario: UsuariosDelete!) {
         deleteUsuario(usuario: $usuario)
       }
     `;
-    const variables = { usuario: input };
+    const variables = { 
+      usuario: {
+        usuariosId: usuario.usuariosId
+      }
+    };
     const data = await this.graphqlRequest(mutation, variables);
     return data.deleteUsuario;
   }
@@ -262,7 +300,7 @@ export class VoluntariadoResolver {
   }   
   
   @Mutation(() => VoluntarioType)
-  async updateVoluntario(@Args('input') input: UpdateVoluntarioInput) {
+  async updateVoluntario(@Args('voluntario') voluntario: VoluntariosInput) {
     const mutation = `
       mutation UpdateVoluntario($voluntario: VoluntariosInput!) {
         updateVoluntario(voluntario: $voluntario) {
@@ -276,19 +314,19 @@ export class VoluntariadoResolver {
         }
       }
     `;
-    const variables = { voluntario: input };
+    const variables = { voluntario };
     const data = await this.graphqlRequest(mutation, variables);
     return data.updateVoluntario;
   }
 
   @Mutation(() => Boolean)
-  async deleteVoluntario(@Args('input') input: DeleteVoluntarioInput) {
+  async deleteVoluntario(@Args('voluntario') voluntario: VoluntariosDelete) {
     const mutation = `
       mutation DeleteVoluntario($voluntario: VoluntariosDelete!) {
         deleteVoluntario(voluntario: $voluntario)
       }
     `;
-    const variables = { voluntario: input };
+    const variables = { voluntario };
     const data = await this.graphqlRequest(mutation, variables);
     return data.deleteVoluntario;
   }

@@ -14,10 +14,19 @@ export class CreateEventoInput {
   @Field()
   hora: string;
 
+  @Field()
+  ubicacion: string;
+
+  @Field()
+  voluntariosNecesarios: number;
+
+  @Field()
+  descripcionEventos: string;
+
 }
 
 @InputType()
-export class UpdateEventoInput {
+export class EventosInput {
   @Field(() => Int)
   eventosId: number;
 
@@ -30,10 +39,19 @@ export class UpdateEventoInput {
   @Field()
   hora: string;
 
+  @Field()
+  ubicacion: string;
+
+  @Field()
+  voluntariosNecesarios: number;
+
+  @Field()
+  descripcionEventos: string;
+
 }
 
 @InputType()
-export class DeleteEventoInput {
+export class EventosDelete {
   @Field(() => Int)
   eventosId: number;
 
@@ -54,13 +72,12 @@ export class CreateVoluntarioInput {
   usuarioId: number;
 }
 
+
+//para actualizar voluntario
 @InputType()
-export class UpdateVoluntarioInput {
+export class VoluntariosInput {
   @Field(() => Int)
   voluntariosId: number;
-
-  @Field()
-  nombre: string;
 
   @Field()
   habilidades: string;
@@ -68,10 +85,13 @@ export class UpdateVoluntarioInput {
   @Field()
   disponibilidad: string;
 
+  @Field(() => Int)
+  usuarioId: number;
+
 }
 
 @InputType()
-export class DeleteVoluntarioInput {
+export class VoluntariosDelete {
   @Field(() => Int)
   voluntariosId: number;
 
@@ -80,7 +100,7 @@ export class DeleteVoluntarioInput {
 @InputType()
 export class CreateUsuarioInput {
   @Field(() => Int)
-  UsuariosId: number;
+  usuariosId: number;
 
   @Field()
   nombre: string;
@@ -98,17 +118,33 @@ export class CreateUsuarioInput {
   tipo: string;
 }
 
+//para actualizar usuario
 @InputType()
-export class UpdateUsuarioInput {
+export class UsuariosInput {
   @Field(() => Int)
-  voluntariosId: number;
+  usuariosId: number;
+
+  @Field()
+  nombre: string;
+
+  @Field()
+  apellido: string;
+
+  @Field()
+  correo: string;
+
+  @Field()
+  telefono: number;
+
+  @Field()
+  tipo: string;
 
 }
 
 @InputType()
-export class DeleteUsuarioInput {
+export class UsuariosDelete {
   @Field(() => Int)
-  voluntariosId: number;
+  usuariosId: number;
 
 }
 

@@ -4,17 +4,23 @@ import { UpdateSolicitudeInput } from './dto/update-solicitude.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Solicitude } from './entities/solicitude.entity';
 import { Repository } from 'typeorm';
+import { WebSocketClientService } from 'src/websocket-client.service';
 
 @Injectable()
 export class SolicitudesService {
   constructor(
     @InjectRepository(Solicitude)
     private readonly solicitudeRepository: Repository<Solicitude>,
+    private readonly wsClient: WebSocketClientService,
   ) {}
 
   async create(createSolicitudeInput: CreateSolicitudeInput): Promise<Solicitude> {
     const solicitude = this.solicitudeRepository.create(createSolicitudeInput);
-    return this.solicitudeRepository.save(solicitude);
+    const saved = await this.solicitudeRepository.save(solicitude);
+
+    this.wsClient.emitirEvento('nueva-solicitude', saved);
+
+    return saved;
   }
 
   async findAll(): Promise<Solicitude[]> {
@@ -30,7 +36,11 @@ export class SolicitudesService {
     if (!solicitude) {
       throw new Error(`Solicitude no encontrada`);
     }
-    return this.solicitudeRepository.save(solicitude);
+    const updated = await this.solicitudeRepository.save(solicitude);
+
+    this.wsClient.emitirEvento('solicitude-actualizada', updated); // ✅ nuevo evento
+
+    return updated;
   }
 
   async remove(id: string): Promise<Solicitude | null> {
@@ -39,6 +49,9 @@ export class SolicitudesService {
       throw new Error(`Solicitude no encontrada`);
     }
     await this.solicitudeRepository.remove(solicitude);
-    return {...solicitude, id};
+
+  this.wsClient.emitirEvento('solicitude-eliminada', { id }); // ✅ nuevo evento
+
+  return { ...solicitude, id };
   }
 }

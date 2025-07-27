@@ -68,8 +68,8 @@ type EventoType {
   fecha: String
   hora: String
   ubicacion: String
-  tipo: String
-  estado: String
+  voluntariosNecesarios: String
+  descripcionEventos: String
 }
 
 type Query {
@@ -87,13 +87,15 @@ type Mutation {
   createOrganizacione(input: CreateOrganizacioneInput!): OrganizacionesType!
   createInventario(createInventarioInput: CreateInventarioInput!): InventariosType!
   createSolicitude(createSolicitudeInput: CreateSolicitudeInput!): SolicitudesType!
-  createEvento(input: CreateEventoInput!): EventoType!
+  createEvento(evento: CreateEventoInput!): EventoType!
+  updateEvento(evento: EventosInput!): EventoType!
+  deleteEvento(evento: EventosDelete!): Boolean!
   createUsuario(input: CreateUsuarioInput!): UsuarioType!
-  updateUsuario(input: UpdateUsuarioInput!): UsuarioType!
-  deleteUsuario(input: DeleteUsuarioInput!): Boolean!
+  updateUsuario(usuario: UsuariosInput!): UsuarioType!
+  deleteUsuario(usuario: UsuariosDelete!): Boolean!
   createVoluntario(voluntario: CreateVoluntarioInput!): VoluntarioType!
-  updateVoluntario(input: UpdateVoluntarioInput!): VoluntarioType!
-  deleteVoluntario(input: DeleteVoluntarioInput!): Boolean!
+  updateVoluntario(voluntario: VoluntariosInput!): VoluntarioType!
+  deleteVoluntario(voluntario: VoluntariosDelete!): Boolean!
 }
 
 input CreateOrganizacioneInput {
@@ -122,10 +124,27 @@ input CreateEventoInput {
   nombre: String!
   fecha: String!
   hora: String!
+  ubicacion: String!
+  voluntariosNecesarios: Float!
+  descripcionEventos: String!
+}
+
+input EventosInput {
+  eventosId: Int!
+  nombre: String!
+  fecha: String!
+  hora: String!
+  ubicacion: String!
+  voluntariosNecesarios: Float!
+  descripcionEventos: String!
+}
+
+input EventosDelete {
+  eventosId: Int!
 }
 
 input CreateUsuarioInput {
-  UsuariosId: Int!
+  usuariosId: Int!
   nombre: String!
   apellido: String!
   correo: String!
@@ -133,12 +152,17 @@ input CreateUsuarioInput {
   tipo: String!
 }
 
-input UpdateUsuarioInput {
-  voluntariosId: Int!
+input UsuariosInput {
+  usuariosId: Int!
+  nombre: String!
+  apellido: String!
+  correo: String!
+  telefono: Float!
+  tipo: String!
 }
 
-input DeleteUsuarioInput {
-  voluntariosId: Int!
+input UsuariosDelete {
+  usuariosId: Int!
 }
 
 input CreateVoluntarioInput {
@@ -148,13 +172,13 @@ input CreateVoluntarioInput {
   usuarioId: Int!
 }
 
-input UpdateVoluntarioInput {
+input VoluntariosInput {
   voluntariosId: Int!
-  nombre: String!
   habilidades: String!
   disponibilidad: String!
+  usuarioId: Int!
 }
 
-input DeleteVoluntarioInput {
+input VoluntariosDelete {
   voluntariosId: Int!
 }
