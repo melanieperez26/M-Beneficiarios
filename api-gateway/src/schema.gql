@@ -24,13 +24,13 @@ type InventariosType {
   organizacionId: String!
   producto: String!
   cantidad: Float
-  ultimoAbastecimiento: DateTime
+  ultimoAbastecimiento: Timestamp
 }
 
 """
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
-scalar DateTime
+scalar Timestamp
 
 type SolicitudesType {
   id: ID!
@@ -72,6 +72,27 @@ type EventoType {
   descripcionEventos: String
 }
 
+type Donante {
+  id: ID!
+  nombre: String!
+  email: String!
+  tipo: String!
+  telefono: String!
+  contacto: String
+  direccion: String!
+}
+
+type Receptor {
+  id: ID!
+  nombre: String!
+  email: String!
+  telefono: String!
+  contacto: String
+  direccion: String!
+  tipo: String!
+  ubicacion: String!
+}
+
 type Query {
   organizaciones: [OrganizacionesType!]!
   distribuciones: [DistribucionesType!]!
@@ -81,6 +102,18 @@ type Query {
   usuarios: [UsuarioType!]!
   voluntarios: [VoluntarioType!]!
   eventos: [EventoType!]!
+
+  """Obtiene la lista de todos los donantes"""
+  donantes: [Donante]!
+
+  """Obtiene un donante por su ID"""
+  donante(id: Float!): Donante
+
+  """Obtiene la lista de todos los receptores"""
+  receptores: [Receptor]!
+
+  """Obtiene un receptor por su ID"""
+  receptor(id: Float!): Receptor
 }
 
 type Mutation {
@@ -96,6 +129,18 @@ type Mutation {
   createVoluntario(voluntario: CreateVoluntarioInput!): VoluntarioType!
   updateVoluntario(voluntario: VoluntariosInput!): VoluntarioType!
   deleteVoluntario(voluntario: VoluntariosDelete!): Boolean!
+
+  """Crea un nuevo donante"""
+  crearDonante(donanteInput: DonanteInput!): Donante!
+
+  """Elimina un donante por su ID"""
+  eliminarDonante(id: Int!): Boolean!
+
+  """Crea un nuevo receptor"""
+  crearReceptor(receptorInput: ReceptorInput!): Receptor!
+
+  """Elimina un receptor por su ID"""
+  eliminarReceptor(id: Int!): Boolean!
 }
 
 input CreateOrganizacioneInput {
@@ -110,7 +155,7 @@ input CreateInventarioInput {
   organizacionId: Int!
   producto: String!
   cantidad: Int!
-  ultimoAbastecimiento: DateTime!
+  ultimoAbastecimiento: Timestamp!
 }
 
 input CreateSolicitudeInput {
@@ -181,4 +226,23 @@ input VoluntariosInput {
 
 input VoluntariosDelete {
   voluntariosId: Int!
+}
+
+input DonanteInput {
+  nombre: String!
+  email: String!
+  tipo: String!
+  telefono: String!
+  contacto: String
+  direccion: String!
+}
+
+input ReceptorInput {
+  nombre: String!
+  email: String!
+  telefono: String!
+  contacto: String
+  direccion: String!
+  tipo: String
+  ubicacion: String
 }
