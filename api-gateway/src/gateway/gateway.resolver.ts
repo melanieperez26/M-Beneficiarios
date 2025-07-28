@@ -1,11 +1,11 @@
 import { Resolver, Query,Args, Mutation } from '@nestjs/graphql';
 import axios from 'axios';
 import { OrganizacionesType } from './types/organizaciones.type';
-import { DistribucionesType } from './types/distribuciones.type';
 import { InventariosType } from './types/inventarios.type';
 import { SolicitudesType } from './types/solicitudes.type';
-import { RutasOptimasType } from './types/rutasoptimas.type';
 import { CreateOrganizacioneInput, CreateInventarioInput, CreateSolicitudeInput } from './types/InputTypesBeneficiarios';
+import { UpdateOrganizacioneInput, UpdateInventarioInput, UpdateSolicitudeInput } from './types/InputTypesBeneficiarios';
+import { DeleteOrganizacioneInput, DeleteInventarioInput, DeleteSolicitudeInput } from './types/InputTypesBeneficiarios';
 
 
 @Resolver()
@@ -30,25 +30,6 @@ export class GatewayResolver {
         });
 
         return response.data.data.organizaciones;
-    }
-
-    @Query(() => [DistribucionesType])
-    async distribuciones(): Promise<DistribucionesType[]> {
-        const response = await axios.post(this.microserviceUrl, {
-            query: `
-                query {
-                    distribuciones {
-                        id
-                        organizacionId
-                        donanteId
-                        cantidad
-                        productos
-                    }
-                }
-            `
-        });
-
-        return response.data.data.distribuciones;
     }
 
     @Query(() => [InventariosType])
@@ -101,23 +82,6 @@ export class GatewayResolver {
         return response.data.data.solicitudes;
     }
 
-    @Query(() => [RutasOptimasType])
-    async rutasOptimas(): Promise<RutasOptimasType[]> {
-        const response = await axios.post(this.microserviceUrl, {
-            query: `
-                query {
-                    rutasOptimas {
-                        id
-                        secuencia
-                        distancia
-                        distribucionId
-                    }
-                }
-            `
-        });
-
-        return response.data.data.rutasOptimas;
-    }
 
     @Mutation(() => OrganizacionesType)
     async createOrganizacione(@Args('input') input: CreateOrganizacioneInput): Promise<OrganizacionesType> {
@@ -214,6 +178,166 @@ export class GatewayResolver {
         }
     }
 
+    @Mutation(() => OrganizacionesType)
+    async updateOrganizacione(
+        @Args('updateOrganizacioneInput') input: UpdateOrganizacioneInput
+    ): Promise<OrganizacionesType> {
+        const mutation = `
+            mutation UpdateOrganizacione($input: UpdateOrganizacioneInput!) {
+                updateOrganizacione(updateOrganizacioneInput: $input) {
+                    id
+                    nombre
+                    lat
+                    lng
+                    capacidad
+                    usuarioId
+                }
+            }
+        `;
+    
+        const requestData = {
+            query: mutation,
+            variables: { input }
+        };
+    
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+        console.log('Input Type:', typeof input, input);
+        console.log('Input Keys:', Object.keys(input));
+        console.log('Input Values:', Object.values(input));
+    
+        try {
+            const response = await axios({
+                method: 'post',
+                url: this.microserviceUrl,
+                data: requestData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                validateStatus: () => true
+            });
+    
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Headers:', response.headers);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+            
+            if (response.status !== 200) {
+                console.error('HTTP Error Details:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: response.data,
+                    headers: response.headers
+                });
+                throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+            }
+    
+            if (response.data.errors) {
+                console.error('GraphQL Errors:', response.data.errors);
+                throw new Error('Error from microservice: ' + 
+                    JSON.stringify(response.data.errors, null, 2));
+            }
+    
+            if (!response.data?.data?.updateOrganizacione) {
+                console.error('Unexpected response format:', response.data);
+                throw new Error('Unexpected response format from microservice');
+            }
+    
+            return response.data.data.updateOrganizacione;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (error.response) {
+                console.error('Error Response Data:', error.response.data);
+                console.error('Status:', error.response.status);
+                console.error('Headers:', error.response.headers);
+                console.error('Request Config:', {
+                    url: error.config?.url,
+                    method: error.config?.method,
+                    data: error.config?.data,
+                    headers: error.config?.headers
+                });
+            } else if (error.request) {
+                console.error('No response received. Request details:', {
+                    url: this.microserviceUrl,
+                    method: 'POST',
+                    data: JSON.stringify(requestData, null, 2)
+                });
+                console.error('Error Request:', error.request);
+            } else {
+                console.error('Error Message:', error.message);
+                console.error('Error Stack:', error.stack);
+            }
+            throw new Error('Failed to update organizacion: ' + error.message);
+        } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+
+    @Mutation(() => OrganizacionesType)
+    async removeOrganizacione(
+        @Args('id') id: string
+    ): Promise<OrganizacionesType> {
+        const mutation = `
+            mutation RemoveOrganizacione($id: String!) {
+                removeOrganizacione(id: $id) {
+                    id
+                    nombre
+                    lat
+                    lng
+                    capacidad
+                    usuarioId
+                }
+            }
+        `;
+
+        const requestData = {
+            query: mutation,
+            variables: { id }
+        };
+
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+        
+        try {
+            const response = await axios.post(this.microserviceUrl, requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                validateStatus: () => true
+            });
+
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+
+            if (response.status !== 200 || response.data.errors) {
+                console.error('\n===== ERROR DETAILS =====');
+                console.error('Error Status:', response.status);
+                console.error('Error Response:', response.data);
+                throw new Error('Failed to delete organizacion: ' + 
+                    (response.data.errors?.[0]?.message || response.statusText));
+            }
+
+            return response.data.data.removeOrganizacione;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (axios.isAxiosError(error)) {
+                console.error('Axios Error:', error.message);
+                if (error.response) {
+                    console.error('Response Status:', error.response.status);
+                    console.error('Response Data:', error.response.data);
+                }
+            } else {
+                console.error('Error Message:', error.message);
+            }
+            throw new Error('Failed to delete organizacion: ' + error.message);
+        } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
     @Mutation(() => InventariosType)
     async createInventario(
         @Args('createInventarioInput') input: CreateInventarioInput
@@ -311,6 +435,164 @@ export class GatewayResolver {
         }
     }
 
+    @Mutation(() => InventariosType)
+    async removeInventario(
+        @Args('id') id: string
+    ): Promise<InventariosType> {
+        const mutation = `
+            mutation RemoveInventario($id: String!) {
+                removeInventario(id: $id) {
+                    id
+                    producto
+                    cantidad
+                    organizacionId
+                    ultimoAbastecimiento
+                }
+            }
+        `;
+
+        const requestData = {
+            query: mutation,
+            variables: { id }
+        };
+
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+        
+        try {
+            const response = await axios.post(this.microserviceUrl, requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                validateStatus: () => true
+            });
+
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+
+            if (response.status !== 200 || response.data.errors) {
+                console.error('\n===== ERROR DETAILS =====');
+                console.error('Error Status:', response.status);
+                console.error('Error Response:', response.data);
+                throw new Error('Failed to delete inventario: ' + 
+                    (response.data.errors?.[0]?.message || response.statusText));
+            }
+
+            return response.data.data.removeInventario;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (axios.isAxiosError(error)) {
+                console.error('Axios Error:', error.message);
+                if (error.response) {
+                    console.error('Response Status:', error.response.status);
+                    console.error('Response Data:', error.response.data);
+                }
+            } else {
+                console.error('Error Message:', error.message);
+            }
+            throw new Error('Failed to delete inventario: ' + error.message);
+        } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+    @Mutation(() => InventariosType)
+    async updateInventario(
+        @Args('updateInventarioInput') input: UpdateInventarioInput
+    ): Promise<InventariosType> {
+        const mutation = `
+            mutation UpdateInventario($input: UpdateInventarioInput!) {
+                updateInventario(updateInventarioInput: $input) {
+                    id
+                    organizacionId
+                    producto
+                    cantidad
+                    ultimoAbastecimiento
+                }
+            }
+        `;
+    
+        const requestData = {
+            query: mutation,
+            variables: { input }
+        };
+    
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+        console.log('Input Type:', typeof input, input);
+        console.log('Input Keys:', Object.keys(input));
+        console.log('Input Values:', Object.values(input));
+    
+        try {
+            const response = await axios({
+                method: 'post',
+                url: this.microserviceUrl,
+                data: requestData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                validateStatus: () => true
+            });
+    
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Headers:', response.headers);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+            
+            if (response.status !== 200) {
+                console.error('HTTP Error Details:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: response.data,
+                    headers: response.headers
+                });
+                throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+            }
+    
+            if (response.data.errors) {
+                console.error('GraphQL Errors:', response.data.errors);
+                throw new Error('Error from microservice: ' + 
+                    JSON.stringify(response.data.errors, null, 2));
+            }
+    
+            if (!response.data?.data?.updateInventario) {
+                console.error('Unexpected response format:', response.data);
+                throw new Error('Unexpected response format from microservice');
+            }
+    
+            return response.data.data.updateInventario;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (error.response) {
+                console.error('Error Response Data:', error.response.data);
+                console.error('Status:', error.response.status);
+                console.error('Headers:', error.response.headers);
+                console.error('Request Config:', {
+                    url: error.config?.url,
+                    method: error.config?.method,
+                    data: error.config?.data,
+                    headers: error.config?.headers
+                });
+            } else if (error.request) {
+                console.error('No response received. Request details:', {
+                    url: this.microserviceUrl,
+                    method: 'POST',
+                    data: JSON.stringify(requestData, null, 2)
+                });
+                console.error('Error Request:', error.request);
+            } else {
+                console.error('Error Message:', error.message);
+                console.error('Error Stack:', error.stack);
+            }
+            throw new Error('Failed to update inventario: ' + error.message);
+        } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+
     @Mutation(() => SolicitudesType)
     async createSolicitude(
         @Args('createSolicitudeInput') input: CreateSolicitudeInput
@@ -369,6 +651,164 @@ export class GatewayResolver {
             console.error('\n===== REQUEST COMPLETED =====\n');
             throw new Error(`Failed to create solicitud: ${error.message}`);
         }finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+
+    @Mutation(() => SolicitudesType)
+    async updateSolicitude(
+        @Args('updateSolicitudeInput') input: UpdateSolicitudeInput
+    ): Promise<SolicitudesType> {
+        const mutation = `
+            mutation UpdateSolicitude($input: UpdateSolicitudeInput!) {
+                updateSolicitude(updateSolicitudeInput: $input) {
+                    id
+                    productos_necesitados
+                    urgencia
+                    organizacionId
+                }
+            }
+        `;
+    
+        const requestData = {
+            query: mutation,
+            variables: { input }
+        };
+    
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+        console.log('Input Type:', typeof input, input);
+        console.log('Input Keys:', Object.keys(input));
+        console.log('Input Values:', Object.values(input));
+    
+        try {
+            const response = await axios({
+                method: 'post',
+                url: this.microserviceUrl,
+                data: requestData,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                validateStatus: () => true
+            });
+    
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Headers:', response.headers);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+            
+            if (response.status !== 200) {
+                console.error('HTTP Error Details:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: response.data,
+                    headers: response.headers
+                });
+                throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+            }
+    
+            if (response.data.errors) {
+                console.error('GraphQL Errors:', response.data.errors);
+                throw new Error('Error from microservice: ' + 
+                    JSON.stringify(response.data.errors, null, 2));
+            }
+    
+            if (!response.data?.data?.updateSolicitude) {
+                console.error('Unexpected response format:', response.data);
+                throw new Error('Unexpected response format from microservice');
+            }
+    
+            return response.data.data.updateSolicitude;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (error.response) {
+                console.error('Error Response Data:', error.response.data);
+                console.error('Status:', error.response.status);
+                console.error('Headers:', error.response.headers);
+                console.error('Request Config:', {
+                    url: error.config?.url,
+                    method: error.config?.method,
+                    data: error.config?.data,
+                    headers: error.config?.headers
+                });
+            } else if (error.request) {
+                console.error('No response received. Request details:', {
+                    url: this.microserviceUrl,
+                    method: 'POST',
+                    data: JSON.stringify(requestData, null, 2)
+                });
+                console.error('Error Request:', error.request);
+            } else {
+                console.error('Error Message:', error.message);
+                console.error('Error Stack:', error.stack);
+            }
+            throw new Error('Failed to update solicitud: ' + error.message);
+        } finally {
+            console.log('\n===== REQUEST COMPLETED =====\n');
+        }
+    }
+
+    @Mutation(() => SolicitudesType)
+    async removeSolicitude(
+        @Args('id') id: string
+    ): Promise<SolicitudesType> {
+        const mutation = `
+            mutation RemoveSolicitude($id: String!) {
+                removeSolicitude(id: $id) {
+                    id
+                    productos_necesitados
+                    urgencia
+                    organizacionId
+                }
+            }
+        `;
+
+        const requestData = {
+            query: mutation,
+            variables: { id }
+        };
+
+        console.log('===== REQUEST TO MICROSERVICE =====');
+        console.log('URL:', this.microserviceUrl);
+        console.log('Request Data:', JSON.stringify(requestData, null, 2));
+        
+        try {
+            const response = await axios.post(this.microserviceUrl, requestData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                validateStatus: () => true
+            });
+
+            console.log('\n===== RESPONSE FROM MICROSERVICE =====');
+            console.log('Status:', response.status, response.statusText);
+            console.log('Response Data:', JSON.stringify(response.data, null, 2));
+
+            if (response.status !== 200 || response.data.errors) {
+                console.error('\n===== ERROR DETAILS =====');
+                console.error('Error Status:', response.status);
+                console.error('Error Response:', response.data);
+                throw new Error('Failed to delete solicitud: ' + 
+                    (response.data.errors?.[0]?.message || response.statusText));
+            }
+
+            // Return the deleted solicitud data
+            return response.data.data.removeSolicitude;
+        } catch (error) {
+            console.error('\n===== ERROR DETAILS =====');
+            if (axios.isAxiosError(error)) {
+                console.error('Axios Error:', error.message);
+                if (error.response) {
+                    console.error('Response Status:', error.response.status);
+                    console.error('Response Data:', error.response.data);
+                }
+            } else {
+                console.error('Error Message:', error.message);
+            }
+            throw new Error('Failed to delete solicitud: ' + error.message);
+        } finally {
             console.log('\n===== REQUEST COMPLETED =====\n');
         }
     }

@@ -11,39 +11,19 @@ type OrganizacionesType {
   usuarioId: ID!
 }
 
-type DistribucionesType {
-  id: ID!
-  organizacionId: String!
-  donanteId: String!
-  cantidad: Float
-  productos: [String!]!
-}
-
 type InventariosType {
   id: ID!
   organizacionId: String!
   producto: String!
   cantidad: Float
-  ultimoAbastecimiento: Timestamp
+  ultimoAbastecimiento: String
 }
-
-"""
-`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
-"""
-scalar Timestamp
 
 type SolicitudesType {
   id: ID!
   productos_necesitados: String!
   urgencia: String!
   organizacionId: ID!
-}
-
-type RutasOptimasType {
-  id: ID!
-  secuencia: String!
-  distancia: Float!
-  distribucionId: String!
 }
 
 type UsuarioType {
@@ -95,10 +75,8 @@ type Receptor {
 
 type Query {
   organizaciones: [OrganizacionesType!]!
-  distribuciones: [DistribucionesType!]!
   inventarios: [InventariosType!]!
   solicitudes: [SolicitudesType!]!
-  rutasOptimas: [RutasOptimasType!]!
   usuarios: [UsuarioType!]!
   voluntarios: [VoluntarioType!]!
   eventos: [EventoType!]!
@@ -118,8 +96,14 @@ type Query {
 
 type Mutation {
   createOrganizacione(input: CreateOrganizacioneInput!): OrganizacionesType!
+  updateOrganizacione(updateOrganizacioneInput: UpdateOrganizacioneInput!): OrganizacionesType!
+  removeOrganizacione(id: String!): OrganizacionesType!
   createInventario(createInventarioInput: CreateInventarioInput!): InventariosType!
+  removeInventario(id: String!): InventariosType!
+  updateInventario(updateInventarioInput: UpdateInventarioInput!): InventariosType!
   createSolicitude(createSolicitudeInput: CreateSolicitudeInput!): SolicitudesType!
+  updateSolicitude(updateSolicitudeInput: UpdateSolicitudeInput!): SolicitudesType!
+  removeSolicitude(id: String!): SolicitudesType!
   createEvento(evento: CreateEventoInput!): EventoType!
   updateEvento(evento: EventosInput!): EventoType!
   deleteEvento(evento: EventosDelete!): Boolean!
@@ -151,6 +135,15 @@ input CreateOrganizacioneInput {
   usuarioId: Int!
 }
 
+input UpdateOrganizacioneInput {
+  id: String!
+  nombre: String!
+  lat: Float!
+  lng: Float!
+  capacidad: Float!
+  usuarioId: Int!
+}
+
 input CreateInventarioInput {
   organizacionId: Int!
   producto: String!
@@ -158,7 +151,27 @@ input CreateInventarioInput {
   ultimoAbastecimiento: Timestamp!
 }
 
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
+input UpdateInventarioInput {
+  id: ID!
+  organizacionId: Int!
+  producto: String!
+  cantidad: Int!
+  ultimoAbastecimiento: String
+}
+
 input CreateSolicitudeInput {
+  productos_necesitados: String!
+  urgencia: String!
+  organizacionId: Int!
+}
+
+input UpdateSolicitudeInput {
+  id: String!
   productos_necesitados: String!
   urgencia: String!
   organizacionId: Int!

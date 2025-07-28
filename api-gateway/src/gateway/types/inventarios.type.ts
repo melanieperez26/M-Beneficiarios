@@ -14,6 +14,6 @@ export class InventariosType {
     @Field(() => Float, { nullable: true })
     cantidad: number;
 
-    @Field(() => Date, { nullable: true })
-    ultimoAbastecimiento: Date;
+    @Field(() => String, { nullable: true })
+    ultimoAbastecimiento: string;
 }
